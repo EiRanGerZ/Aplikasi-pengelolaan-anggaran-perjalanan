@@ -2,311 +2,331 @@ package main
 
 import "fmt"
 
-const maxData = 1000
-type Pengeluaran struct{
-	transportasi, akomodasi, makanan, hiburan float64
-	idxTransportasi, idxAkomodasi, idxMakanan, idxHiburan int
-}
-type arrPengeluaran [maxData]Pengeluaran
+const NMAX = 1000
 
+type Pengeluaran struct {
+	kategori  [NMAX]string
+	jumlah    [NMAX]float64
+	nKategori int
+}
 
 func main() {
-	var data arrPengeluaran
-	var totalBudget float64
-	
-    fmt.Print("Masukkan total budget perjalanan: ")
-    fmt.Scan(&totalBudget)
-	menuAwal(&data)
-	
-	
-}
+	var data Pengeluaran
+	var anggaran float64
+	var pilihan int
 
-func tambahPengeluaran(A *arrPengeluaran) {
-	var pilihkategori int
-	var tambah float64
-	for pilihkategori != 0{
-        fmt.Println("\nPilih Kategori:")
-        fmt.Println("1. Transportasi")
-        fmt.Println("2. Akomodasi")
-        fmt.Println("3. Makanan")
-        fmt.Println("4. Hiburan")
-        fmt.Println("0. Keluar")
-        fmt.Print("Pilih kategori: ")
-        fmt.Scan(&pilihkategori)
-		
-		switch pilihkategori {
-			case 0:
-				fmt.Println("Kembali ke menu utama")
-			case 1:
-				fmt.Print("Masukan budget Transportasi: ")
-				fmt.Scan(&tambah)
-				A.transportasi[A.idxTransportasi] = tambah
-				A.idxTransportasi++
-				
-			case 2:
-				fmt.Print("Masukan budget Akomodasi: ")
-				fmt.Scan(&tambah)
-				A.akomodasi[A.idxAkomodasi] = tambah
-				A.idxAkomodasi++
-				
-			case 3:
-				fmt.Scan(&tambah)
-				A.makanan[A.idxMakanan] = tambah
-				A.idxMakanan++
-				
-			case 4:
-				fmt.Scan(&tambah)
-				A.hiburan[A.idxHiburan] = tambah
-				A.idxHiburan++
-			default:
-				fmt.Println("Pilihan tidak valid")
+	fmt.Print("Masukkan anggaran perjalanan Anda (Rp): ")
+	fmt.Scan(&anggaran)
+
+	for {
+		menuAwal()
+		fmt.Scan(&pilihan)
+		switch pilihan {
+		case 1:
+			tambahUpdate(&data)
+		case 2:
+			var nama string
+			fmt.Print("Nama kategori yang ingin dihapus: ")
+			fmt.Scan(&nama)
+			hapusKategori(&data, nama)
+		case 3:
+			tampilkanPengeluaran(data)
+		case 4:
+			var nama string
+			var metode string
+			var idx int
+			fmt.Print("Nama kategori yang dicari: ")
+			fmt.Scan(&nama)
+			fmt.Print("Metode (sequential/binary): ")
+			fmt.Scan(&metode)
+			if metode == "sequential" {
+				idx = sequentialSearch(data, nama)
+			} else {
+				idx = binarySearch(data, nama)
+			}
+			if idx != -1 {
+				fmt.Println("\n+--------------------------------------------------+")
+				fmt.Printf("Kategori ditemukan: %s - Rp%.2f\n", data.kategori[idx], data.jumlah[idx])
+				fmt.Println("\n+--------------------------------------------------+")
+			} else {
+				fmt.Println("\n+--------------------------------------------------+")
+				fmt.Println("|               Kategori tidak ditemukan.            |")
+				fmt.Println("\n+--------------------------------------------------+")
+			}
+		case 5:
+			selectionSortKategori(&data)
+			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|               Data berhasil diurutkan.             |")
+			fmt.Println("\n+--------------------------------------------------+")
+		case 6:
+			selectionSortJumlah(&data)
+			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|               Data berhasil diurutkan.             |")
+			fmt.Println("\n+--------------------------------------------------+")
+		case 7:
+			insertionSort(&data)
+			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|                Data berhasil diurutkan.            |")
+			fmt.Println("\n+--------------------------------------------------+")
+		case 8:
+			tampilkanLaporan(data, anggaran)
+
+		case 9:
+			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|        Terima kasih telah menggunakan aplikasi.    |")
+			fmt.Println("\n+--------------------------------------------------+")
+			return
+
+		default:
+			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|                  Pilihan tidak valid.              |")
+			fmt.Println("\n+--------------------------------------------------+")
 		}
 	}
 }
 
-func ubahPengeluaran(A *arrPengeluaran) {
-	var pilihkategori, idx int
-	var nilaiBaru float64
-        fmt.Println("\nUbah Budget Pengeluaran:")
-        fmt.Println("1. Transportasi")
-        fmt.Println("2. Akomodasi")
-        fmt.Println("3. Makanan")
-        fmt.Println("4. Hiburan")
-        fmt.Println("0. Keluar")
-        fmt.Print("Pilih kategori: ")
-        fmt.Scan(&pilihkategori)
-	switch pilihkategori {
-		case 1:
-			fmt.Println("Pengeluaran Budget Transportasi:")
-			for i := 0; i < A.idxTransportasi; i++ {
-				fmt.Print(i+1, ". ", A.transportasi[i])
-			}
-			fmt.Print("Masukkan nomor pengeluaran yang ingin diubah: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxTransportasi {
-				fmt.Print("Masukkan budget baru: ")
-				fmt.Scan(&nilaiBaru)
-				A.transportasi[idx] = nilaiBaru
-				fmt.Println("Pengeluaran berhasil diubah")
-			} else {
-				fmt.Println("Data kosong")
-			}
-		case 2:
-			fmt.Println("Pengeluaran Budget Akomodasi:")
-			for i := 0; i < A.idxAkomodasi; i++ {
-				fmt.Print(i+1, ". ", A.akomodasi[i])
-			}
-			fmt.Print("Masukkan nomor pengeluaran yang ingin diubah:: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxAkomodasi {
-				fmt.Print("Masukkan budget baru: ")
-				fmt.Scan(&nilaiBaru)
-				A.akomodasi[idx] = nilaiBaru
-				fmt.Println("Pengeluaran berhasil diubah")
-			} else {
-				fmt.Println("Data kosong")
-			}
-		case 3:
-			fmt.Println("Pengeluaran Budget Makanan:")
-			for i := 0; i < A.idxMakanan; i++ {
-				fmt.Print(i+1, ". ", A.makanan[i])
-			}
-			fmt.Print("Masukkan nomor pengeluaran yang ingin diubah: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxMakanan {
-				fmt.Print("Masukkan budget baru: ")
-				fmt.Scan(&nilaiBaru)
-				A.makanan[idx] = nilaiBaru
-				fmt.Println("Pengeluaran berhasil diubah")
-			} else {
-				fmt.Println("Data kosong")
-			}
-		case 4:
-			fmt.Println("Pengeluaran Budget Hiburan:")
-			for i := 0; i < A.idxHiburan; i++ {
-				fmt.Print(i+1, ". ", A.hiburan[i])
-			}
-			fmt.Print("Masukkan nomor yang ingin diubah: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxHiburan {
-				fmt.Print("Masukkan nomor pengeluaran yang ingin diubah: ")
-				fmt.Scan(&nilaiBaru)
-				A.hiburan[idx] = nilaiBaru
-				fmt.Println("Pengeluaran berhasil diubah")
-			} else {
-				fmt.Println("Data kosong")
-			}
-	}
-
-func hapusPengeluaran(A *arrPengeluaran) {
-	var pilihkategori, idx int
-	var nilaiBaru float64
-        fmt.Println("\Hapus Budget Pengeluaran:")
-        fmt.Println("1. Transportasi")
-        fmt.Println("2. Akomodasi")
-        fmt.Println("3. Makanan")
-        fmt.Println("4. Hiburan")
-        fmt.Println("0. Keluar")
-        fmt.Print("Pilih kategori: ")
-        fmt.Scan(&pilihkategori)
-	switch pilihkategori {
-		case 1:
-			fmt.Println("Pengeluaran Budget Transportasi:")
-			for i := 0; i < A.idxTransportasi; i++ {
-				fmt.Print(i+1, ". ", A.transportasi[i])
-			}
-			fmt.Print("Masukkan nomor pengeluaran yang ingin dihapus: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxTransportasi {
-				for i = idx; i < A.idxTransportasi-1; i++{
-				A.transportasi[i] = A.transportasi[i+1]
-				}
-				A.idxTransportasi--
-				fmt.Println("Pengeluaran berhasil dihapus")
-			} else {
-				fmt.Println("Data kosong")
-			}
-		case 2:
-			fmt.Println("Pengeluaran Budget Akomodasi:")
-			for i := 0; i < A.idxAkomodasi; i++ {
-				fmt.Print(i+1, ". ", A.akomodasi[i])
-			}
-			fmt.Print("Masukkan nomor pengeluaran yang ingin dihapus: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxAkomodasi {
-				for i = idx; i < A.idxAkomodasi-1; i++{
-				A.akomodasi[i] = A.akomodasi[i+1]
-				}
-				A.idxAkomodasi--
-				fmt.Println("Pengeluaran berhasil dihapus")
-			} else {
-				fmt.Println("Data kosong")
-			}
-		case 3:
-			fmt.Println("Pengeluaran Budget Makanan:")
-			for i := 0; i < A.idxMakanan; i++ {
-				fmt.Print(i+1, ". ", A.makanan[i])
-			}
-			fmt.Print("Masukkan nomor pengeluaran yang ingin dihapus: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxMakanan {
-				for i = idx; i < A.idxMakanan-1; i++{
-				A.makanan[i] = A.makanan[i+1]
-				}
-				A.idxMakanan--
-				fmt.Println("Pengeluaran berhasil dihapus")
-			} else {
-				fmt.Println("Data kosong")
-			}
-		case 4:
-			fmt.Println("Pengeluaran Budget Hiburan:")
-			for i := 0; i < A.idxHiburan; i++ {
-				fmt.Print(i+1, ". ", A.hiburan[i])
-			}
-			fmt.Print("Masukkan nomor yang ingin dihapus: ")
-			fmt.Scan(&idx)
-			idx = idx - 1
-			if idx >= 0 && idx < A.idxHiburan {
-				for i = idx; i < A.idxHiburan-1; i++{
-				A.hiburan[i] = A.hiburan[i+1]
-				}
-				A.idxHiburan--
-				fmt.Println("Pengeluaran berhasil dihapus")
-			} else {
-				fmt.Println("Data kosong")
-			}
-	}
+func menuAwal() {
+	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Println("|      --- Menu Aplikasi Budget Traveling ---      |")
+	fmt.Println("+--------------------------------------------------+")
+	fmt.Println("| 1. Tambah / Update Pengeluaran                   |")
+	fmt.Println("| 2. Hapus Pengeluaran                             |")
+	fmt.Println("| 3. Tampilkan Semua Pengeluaran                   |")
+	fmt.Println("| 4. Cari Kategori (Sequential/Binary Search)      |")
+	fmt.Println("| 5. Urutkan Data (Nama Kategori)                  |")
+	fmt.Println("| 6. Urutkan Data (Pengeluaran Terendah)           |")
+	fmt.Println("| 7. Urutkan Data (Pengeluaran Tertinggi)          |")
+	fmt.Println("| 8. Laporan Anggaran & Saran                      |")
+	fmt.Println("| 9. Keluar                                        |")
+	fmt.Println("+--------------------------------------------------+")
+	fmt.Print("Pilih menu: ")
 }
 
-func hitungTotalPengeluaran() {
-	var totalTransportasi, totalAkomodasi, totalMakanan, totalHiburan float64
-	var totalKeseluruhan float64
+func tambahUpdate(p *Pengeluaran) {
+	var kategoriDefault [4]string
+	kategoriDefault[0] = "Transportasi"
+	kategoriDefault[1] = "Akomodasi"
+	kategoriDefault[2] = "Makanan"
+	kategoriDefault[3] = "Hiburan"
+
 	var i int
-	
-	for i = 0; i < A.idxTransportasi; i++{
-		totalTransportasi += A.transportasi[i]
+	for i = 0; i < 4; i++ {
+		fmt.Printf("Masukkan jumlah pengeluaran untuk kategori %s: ", kategoriDefault[i])
+		var jumlah float64
+		fmt.Scan(&jumlah)
+		tambahAtauUpdateKategori(p, kategoriDefault[i], jumlah)
 	}
-	for i = 0; i < A.idxAkomodasi; i++{
-		totalAkomodasi += A.akomodasi[i]
+
+	// Input tambahan kategori lain jika user ingin
+	var tambah string
+	for {
+		fmt.Print("Apakah ingin menambahkan kategori lain? (ya/tidak): ")
+		fmt.Scan(&tambah)
+
+		if tambah != "ya" {
+			break
+		}
+
+		var namaBaru string
+		var nilaiBaru float64
+
+		fmt.Print("Masukkan nama kategori: ")
+		fmt.Scan(&namaBaru)
+
+		fmt.Print("Masukkan jumlah pengeluaran: ")
+		fmt.Scan(&nilaiBaru)
+
+		tambahAtauUpdateKategori(p, namaBaru, nilaiBaru)
 	}
-	for i = 0; i < A.idxMakanan; i++{
-		totalMakanan += A.makanan[i]
-	}
-	for i = 0; i < A.idxHiburan; i++{
-		totalTransportasi += A.hiburan[i]
-	}
-	
-	fmt.Println("Total Pengeluaran Transportasi :", totalTransportasi)
-	fmt.Println("Total Pengeluaran Akomodasi    :", totalAkomodasi)
-	fmt.Println("Total Pengeluaran Makanan      :", totalMakanan)
-	fmt.Println("Total Pengeluaran Hiburan      :", totalHiburan)
-
-	totalKeseluruhan = totalTransportasi + totalAkomodasi + totalMakanan + totalHiburan
-	fmt.Println("--------------------------------------")
-	fmt.Println("Total Seluruh Pengeluaran     :", totalKeseluruhan)
 }
 
-func saranPenghematan() {
-
-}
-
-func sequentialSearch() {
-	
-}
-
-func binarySearch() {
-
-}
-
-func selectionSortJumlah() {
-
-}
-
-func insertionSortKategori() {
-
-}
-
-func tampilkanLaporan() {
-
-}
-
-func menuAwal(data *arrPengeluaran) {
-	var pilihMenu int
-	  for pilihMenu != 0{
-        fmt.Println("\nMenu:")
-        fmt.Println("1. Tambah Pengeluaran")
-        fmt.Println("2. Ubah Pengeluaran")
-        fmt.Println("3. Hapus Pengeluaran")
-        fmt.Println("4. Tampilkan Laporan")
-        fmt.Println("5. Saran Penghematan")
-        fmt.Println("6. Cari Pengeluaran")             /*sequential*/
-        fmt.Println("7. Cari Pengeluaran")             /*binary*/
-        fmt.Println("8. Urutkan berdasarkan Jumlah")   /*Selection Sort*/
-        fmt.Println("9. Urutkan berdasarkan Kategori") /*Insertion Sort*/
-        fmt.Println("0. Keluar")
-        fmt.Print("Pilih menu: ")
-        fmt.Scan(&pilihanMenu)
-		
-		switch pilihMenu {
-			case 0:
-				fmt.Print("Program Selesai")
-			case 1:tambahPengeluaran(&data)
-			case 2:ubahPengeluaran(&data)
-			case 3:hapusPengeluaran(&data)
-			case 4:hitungTotalPengeluaran
-			case 5:saranPenghematan
-			case 6:sequentialSearch
-			case 7:selectionSortJumlah
-			case 8:insertionSortKategori
-			case 9:tampilkanLaporan
+// Fungsi dasar
+func tambahAtauUpdateKategori(p *Pengeluaran, nama string, nilai float64) {
+	var i int
+	for i = 0; i < p.nKategori; i++ {
+		if p.kategori[i] == nama {
+			p.jumlah[i] += nilai
+			return
 		}
 	}
+	p.kategori[p.nKategori] = nama
+	p.jumlah[p.nKategori] = nilai
+	p.nKategori++
 }
-  
+
+func hapusKategori(p *Pengeluaran, nama string) {
+	var i int
+	for i = 0; i < p.nKategori; i++ {
+		if p.kategori[i] == nama {
+			var j int
+			for j = i; j < p.nKategori-1; j++ {
+				p.kategori[j] = p.kategori[j+1]
+				p.jumlah[j] = p.jumlah[j+1]
+			}
+			p.nKategori--
+			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|              Kategori berhasil dihapus.            |")
+			fmt.Println("\n+--------------------------------------------------+")
+			return
+		}
+	}
+	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Println("|              Kategori tidak ditemukan.             |")
+	fmt.Println("\n+--------------------------------------------------+")
+}
+
+func tampilkanPengeluaran(p Pengeluaran) float64 {
+	var total float64
+	var i int
+	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Println("\n|                 Daftar Pengeluaran               |")
+	fmt.Println("\n+--------------------------------------------------+")
+	for i = 0; i < p.nKategori; i++ {
+		fmt.Printf("%d. %s: Rp%.2f\n", i+1, p.kategori[i], p.jumlah[i])
+		total += p.jumlah[i]
+	}
+	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Printf("Total Pengeluaran: Rp%.2f\n", total)
+	fmt.Println("\n+--------------------------------------------------+")
+	return total
+}
+
+// Search
+func sequentialSearch(p Pengeluaran, nama string) int {
+	var i int
+	for i = 0; i < p.nKategori; i++ {
+		if p.kategori[i] == nama {
+			return i
+		}
+	}
+	return -1
+}
+
+func binarySearch(p Pengeluaran, nama string) int {
+	selectionSortKategori(&p)
+	var left, right, mid int
+	left = 0
+	right = p.nKategori - 1
+
+	for left <= right {
+		mid = (left + right) / 2
+		if p.kategori[mid] == nama {
+			return mid
+		} else if p.kategori[mid] < nama {
+			left = mid + 1
+		} else {
+			right = mid - 1
+		}
+	}
+	return -1
+}
+
+// Sorting
+//ASCENDING
+func selectionSortKategori(p *Pengeluaran) {
+	var idx, i, pass int
+	var tempKategori string
+	var tempJumlah float64
+	pass = 1
+
+	for pass <= p.nKategori {
+		idx = pass - 1
+		i = pass
+		for i < p.nKategori {
+			if p.kategori[i] < p.kategori[idx] {
+				idx = i
+			}
+			i = i + 1
+		}
+
+		tempKategori = p.kategori[pass-1]
+		p.kategori[pass-1] = p.kategori[idx]
+		p.kategori[idx] = tempKategori
+
+		tempJumlah = p.jumlah[pass-1]
+		p.jumlah[pass-1] = p.jumlah[idx]
+		p.jumlah[idx] = tempJumlah
+
+		pass = pass + 1
+	}
+}
+func selectionSortJumlah(p *Pengeluaran) {
+	var idx, i, pass int
+	var tempKategori string
+	var tempJumlah float64
+	pass = 1
+
+	for pass <= p.nKategori {
+		idx = pass - 1
+		i = pass
+		for i < p.nKategori {
+			if p.jumlah[i] < p.jumlah[idx] {
+				idx = i
+			}
+			i = i + 1
+		}
+
+		tempKategori = p.kategori[pass-1]
+		p.kategori[pass-1] = p.kategori[idx]
+		p.kategori[idx] = tempKategori
+
+		tempJumlah = p.jumlah[pass-1]
+		p.jumlah[pass-1] = p.jumlah[idx]
+		p.jumlah[idx] = tempJumlah
+
+		pass = pass + 1
+	}
+}
+
+//DESCENDING
+func insertionSort(p *Pengeluaran) {
+	var i, pass int
+	var tempKategori string
+	var tempJumlah float64
+
+	pass = 1
+	for pass < p.nKategori {
+		i = pass
+		tempJumlah = p.jumlah[pass]
+		tempKategori = p.kategori[pass]
+		for i > 0 && tempJumlah > p.jumlah[i-1] {
+			p.jumlah[i] = p.jumlah[i-1]
+			p.kategori[i] = p.kategori[i-1]
+			i = i - 1
+		}
+		p.jumlah[i] = tempJumlah
+		p.kategori[i] = tempKategori
+		pass = pass + 1
+	}
+}
+
+// Laporan dan saran
+func tampilkanLaporan(p Pengeluaran, anggaran float64) {
+	var total float64
+	total = tampilkanPengeluaran(p)
+	var selisih float64
+	selisih = anggaran - total
+	fmt.Println("\n+==================================================+")
+	fmt.Println("|                  LAPORAN ANGGARAN                  |")
+	fmt.Println("\n+==================================================+")
+	fmt.Println("|                 Daftar Pengeluaran                 |")
+	fmt.Println("+----------------------------------------------------+")
+	fmt.Printf("Anggaran: Rp%.2f\n", anggaran)
+	fmt.Printf("Selisih: Rp%.2f\n", selisih)
+	if selisih < 0 {
+		fmt.Println("+--------------------------------------------------------------------------------+")
+		fmt.Println("⚠️ Pengeluaran melebihi anggaran! Pertimbangkan mengurangi kategori besar seperti:")
+		selectionSortJumlah(&p)
+		fmt.Println("+---------------------------------------------------------------------------------+")
+		var i int
+		for i = p.nKategori - 1; i >= 0 && i >= p.nKategori-3; i-- {
+			fmt.Println("+--------------------------------------------------+")
+			fmt.Printf("- %s: Rp%.2f\n", p.kategori[i], p.jumlah[i])
+			fmt.Println("+--------------------------------------------------+")
+		}
+	} else {
+		fmt.Println("+--------------------------------------------------+")
+		fmt.Println("✅ Pengeluaran masih dalam batas anggaran.")
+		fmt.Println("+--------------------------------------------------+")
+	}
+}
