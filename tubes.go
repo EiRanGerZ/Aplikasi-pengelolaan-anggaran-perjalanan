@@ -50,37 +50,37 @@ func main() {
 				fmt.Println("\n+--------------------------------------------------+")
 			} else {
 				fmt.Println("\n+--------------------------------------------------+")
-				fmt.Println("|               Kategori tidak ditemukan.            |")
-				fmt.Println("\n+--------------------------------------------------+")
+				fmt.Println("|             Kategori tidak ditemukan             |")
+				fmt.Println("+--------------------------------------------------+")
 			}
 		case 5:
 			selectionSortKategori(&data)
 			fmt.Println("\n+--------------------------------------------------+")
-			fmt.Println("|               Data berhasil diurutkan.             |")
-			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|             Data berhasil diurutkan              |")
+			fmt.Println("+--------------------------------------------------+")
 		case 6:
 			selectionSortJumlah(&data)
 			fmt.Println("\n+--------------------------------------------------+")
-			fmt.Println("|               Data berhasil diurutkan.             |")
-			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|             Data berhasil diurutkan              |")
+			fmt.Println("+--------------------------------------------------+")
 		case 7:
 			insertionSort(&data)
 			fmt.Println("\n+--------------------------------------------------+")
-			fmt.Println("|                Data berhasil diurutkan.            |")
-			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|              Data berhasil diurutkan             |")
+			fmt.Println("+--------------------------------------------------+")
 		case 8:
 			tampilkanLaporan(data, anggaran)
 
 		case 9:
 			fmt.Println("\n+--------------------------------------------------+")
-			fmt.Println("|        Terima kasih telah menggunakan aplikasi.    |")
-			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|     Terima kasih telah menggunakan aplikasi      |")
+			fmt.Println("+--------------------------------------------------+")
 			return
 
 		default:
 			fmt.Println("\n+--------------------------------------------------+")
-			fmt.Println("|                  Pilihan tidak valid.              |")
-			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("|                Pilihan tidak valid               |")
+			fmt.Println("+--------------------------------------------------+")
 		}
 	}
 }
@@ -164,30 +164,31 @@ func hapusKategori(p *Pengeluaran, nama string) {
 				p.jumlah[j] = p.jumlah[j+1]
 			}
 			p.nKategori--
-			fmt.Println("\n+--------------------------------------------------+")
-			fmt.Println("|              Kategori berhasil dihapus.            |")
-			fmt.Println("\n+--------------------------------------------------+")
+			fmt.Println("+--------------------------------------------------+")
+			fmt.Println("|            Kategori berhasil dihapus             |")
+			fmt.Println("+--------------------------------------------------+")
 			return
 		}
 	}
-	fmt.Println("\n+--------------------------------------------------+")
-	fmt.Println("|              Kategori tidak ditemukan.             |")
-	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Println("+--------------------------------------------------+")
+	fmt.Println("|            Kategori tidak ditemukan              |")
+	fmt.Println("+--------------------------------------------------+")
 }
 
 func tampilkanPengeluaran(p Pengeluaran) float64 {
 	var total float64
 	var i int
-	fmt.Println("\n+--------------------------------------------------+")
-	fmt.Println("\n|                 Daftar Pengeluaran               |")
-	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Println("+--------------------------------------------------+")
+	fmt.Println("|                 Daftar Pengeluaran               |")
+	fmt.Println("+--------------------------------------------------+")
 	for i = 0; i < p.nKategori; i++ {
 		fmt.Printf("%d. %s: Rp%.2f\n", i+1, p.kategori[i], p.jumlah[i])
 		total += p.jumlah[i]
 	}
-	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Println("+--------------------------------------------------+")
 	fmt.Printf("Total Pengeluaran: Rp%.2f\n", total)
-	fmt.Println("\n+--------------------------------------------------+")
+	fmt.Println("+--------------------------------------------------+")
+	fmt.Println()
 	return total
 }
 
@@ -306,18 +307,18 @@ func tampilkanLaporan(p Pengeluaran, anggaran float64) {
 	total = tampilkanPengeluaran(p)
 	var selisih float64
 	selisih = anggaran - total
-	fmt.Println("\n+==================================================+")
-	fmt.Println("|                  LAPORAN ANGGARAN                  |")
-	fmt.Println("\n+==================================================+")
-	fmt.Println("|                 Daftar Pengeluaran                 |")
-	fmt.Println("+----------------------------------------------------+")
+	fmt.Println("+==================================================+")
+	fmt.Println("|                 LAPORAN ANGGARAN                 |")
+	fmt.Println("+==================================================+")
+	fmt.Println("|                Daftar Pengeluaran                |")
+	fmt.Println("+--------------------------------------------------+")
 	fmt.Printf("Anggaran: Rp%.2f\n", anggaran)
 	fmt.Printf("Selisih: Rp%.2f\n", selisih)
 	if selisih < 0 {
 		fmt.Println("+--------------------------------------------------------------------------------+")
 		fmt.Println("⚠️ Pengeluaran melebihi anggaran! Pertimbangkan mengurangi kategori besar seperti:")
 		selectionSortJumlah(&p)
-		fmt.Println("+---------------------------------------------------------------------------------+")
+		fmt.Println("+--------------------------------------------------------------------------------+")
 		var i int
 		for i = p.nKategori - 1; i >= 0 && i >= p.nKategori-3; i-- {
 			fmt.Println("+--------------------------------------------------+")
@@ -326,7 +327,7 @@ func tampilkanLaporan(p Pengeluaran, anggaran float64) {
 		}
 	} else {
 		fmt.Println("+--------------------------------------------------+")
-		fmt.Println("✅ Pengeluaran masih dalam batas anggaran.")
+		fmt.Println("     ✅ Pengeluaran masih dalam batas anggaran")
 		fmt.Println("+--------------------------------------------------+")
 	}
 }
