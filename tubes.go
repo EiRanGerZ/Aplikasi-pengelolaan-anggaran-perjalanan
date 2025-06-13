@@ -1,5 +1,4 @@
 package main
-
 import "fmt"
 
 const NMAX = 1000
@@ -13,7 +12,8 @@ type Pengeluaran struct {
 func main() {
 	var data Pengeluaran
 	var anggaran float64
-	var pilihan int
+	var pilihan, idx int
+	var nama, metode string
 
 	fmt.Print("Masukkan anggaran perjalanan Anda (Rp): ")
 	fmt.Scan(&anggaran)
@@ -25,28 +25,29 @@ func main() {
 		case 1:
 			tambahUpdate(&data)
 		case 2:
-			var nama string
 			fmt.Print("Nama kategori yang ingin dihapus: ")
 			fmt.Scan(&nama)
 			hapusKategori(&data, nama)
 		case 3:
 			tampilkanPengeluaran(data)
 		case 4:
-			var nama string
-			var metode string
-			var idx int
 			fmt.Print("Nama kategori yang dicari: ")
 			fmt.Scan(&nama)
 			fmt.Print("Metode (sequential/binary): ")
 			fmt.Scan(&metode)
 			if metode == "sequential" {
 				idx = sequentialSearch(data, nama)
-			} else {
+			} else if metode == "binary" {
+				// urutkan array asli SEBELUM cari
+				selectionSortKategori(&data)
 				idx = binarySearch(data, nama)
-			}
+			} else {
+				fmt.Println("Metode tidak dikenal, default ke sequential")
+				idx = sequentialSearch(data, nama)
+			} 
 			if idx != -1 {
 				fmt.Println("\n+--------------------------------------------------+")
-				fmt.Printf("Kategori ditemukan: %s - Rp%.2f\n", data.kategori[idx], data.jumlah[idx])
+				fmt.Printf("Kategori ditemukan: %s Rp%.2f", data.kategori[idx], data.jumlah[idx])
 				fmt.Println("\n+--------------------------------------------------+")
 			} else {
 				fmt.Println("\n+--------------------------------------------------+")
@@ -104,38 +105,32 @@ func menuAwal() {
 
 func tambahUpdate(p *Pengeluaran) {
 	var kategoriDefault [4]string
+	var tambah, namaBaru string
+	var nilaiBaru, jumlah float64
+	var i int
+	
 	kategoriDefault[0] = "Transportasi"
 	kategoriDefault[1] = "Akomodasi"
 	kategoriDefault[2] = "Makanan"
 	kategoriDefault[3] = "Hiburan"
 
-	var i int
 	for i = 0; i < 4; i++ {
 		fmt.Printf("Masukkan jumlah pengeluaran untuk kategori %s: ", kategoriDefault[i])
-		var jumlah float64
 		fmt.Scan(&jumlah)
 		tambahAtauUpdateKategori(p, kategoriDefault[i], jumlah)
 	}
 
 	// Input tambahan kategori lain jika user ingin
-	var tambah string
 	for {
 		fmt.Print("Apakah ingin menambahkan kategori lain? (ya/tidak): ")
 		fmt.Scan(&tambah)
-
 		if tambah != "ya" {
 			break
 		}
-
-		var namaBaru string
-		var nilaiBaru float64
-
 		fmt.Print("Masukkan nama kategori: ")
 		fmt.Scan(&namaBaru)
-
 		fmt.Print("Masukkan jumlah pengeluaran: ")
 		fmt.Scan(&nilaiBaru)
-
 		tambahAtauUpdateKategori(p, namaBaru, nilaiBaru)
 	}
 }
@@ -143,6 +138,7 @@ func tambahUpdate(p *Pengeluaran) {
 // Fungsi dasar
 func tambahAtauUpdateKategori(p *Pengeluaran, nama string, nilai float64) {
 	var i int
+	
 	for i = 0; i < p.nKategori; i++ {
 		if p.kategori[i] == nama {
 			p.jumlah[i] += nilai
@@ -155,10 +151,10 @@ func tambahAtauUpdateKategori(p *Pengeluaran, nama string, nilai float64) {
 }
 
 func hapusKategori(p *Pengeluaran, nama string) {
-	var i int
+	var i, j int
+	
 	for i = 0; i < p.nKategori; i++ {
 		if p.kategori[i] == nama {
-			var j int
 			for j = i; j < p.nKategori-1; j++ {
 				p.kategori[j] = p.kategori[j+1]
 				p.jumlah[j] = p.jumlah[j+1]
@@ -206,6 +202,7 @@ func sequentialSearch(p Pengeluaran, nama string) int {
 func binarySearch(p Pengeluaran, nama string) int {
 	selectionSortKategori(&p)
 	var left, right, mid int
+	
 	left = 0
 	right = p.nKategori - 1
 
@@ -255,6 +252,7 @@ func selectionSortJumlah(p *Pengeluaran) {
 	var idx, i, pass int
 	var tempKategori string
 	var tempJumlah float64
+	
 	pass = 1
 
 	for pass <= p.nKategori {
@@ -303,9 +301,10 @@ func insertionSort(p *Pengeluaran) {
 
 // Laporan dan saran
 func tampilkanLaporan(p Pengeluaran, anggaran float64) {
-	var total float64
+	var total, selisih float64
+	var i int
+	
 	total = tampilkanPengeluaran(p)
-	var selisih float64
 	selisih = anggaran - total
 	fmt.Println("+==================================================+")
 	fmt.Println("|                 LAPORAN ANGGARAN                 |")
@@ -319,8 +318,7 @@ func tampilkanLaporan(p Pengeluaran, anggaran float64) {
 		fmt.Println("⚠️ Pengeluaran melebihi anggaran! Pertimbangkan mengurangi kategori besar seperti:")
 		selectionSortJumlah(&p)
 		fmt.Println("+--------------------------------------------------------------------------------+")
-		var i int
-		for i = p.nKategori - 1; i >= 0 && i >= p.nKategori-3; i-- {
+		for i = p.nKategori - 1; i >= 0 && i >= p.nKategori - 1; i-- {
 			fmt.Println("+--------------------------------------------------+")
 			fmt.Printf("- %s: Rp%.2f\n", p.kategori[i], p.jumlah[i])
 			fmt.Println("+--------------------------------------------------+")
