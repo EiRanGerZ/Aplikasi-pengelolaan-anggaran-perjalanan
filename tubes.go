@@ -318,7 +318,7 @@ func tampilkanLaporan(p Pengeluaran, anggaran float64) {
 		fmt.Println("⚠️ Pengeluaran melebihi anggaran! Pertimbangkan mengurangi kategori besar seperti:")
 		selectionSortJumlah(&p)
 		fmt.Println("+--------------------------------------------------------------------------------+")
-		for i = p.nKategori - 1; i >= 0; i-- {
+		for i = p.nKategori - 1; i >= 0 && i >= p.nKategori - 1; i-- {
 			fmt.Println("+--------------------------------------------------+")
 			fmt.Printf("- %s: Rp%.2f\n", p.kategori[i], p.jumlah[i])
 			fmt.Println("+--------------------------------------------------+")
